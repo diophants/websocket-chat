@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <form>
+      <input type="text" id="textInput" />
+      <input type="submit" value="Сохранить" />
+    </form>
+
+    <div id="output"></div>
+
+    <script>
+      const socket = new WebSocket('ws://localhost:8000');
+
+      socket.onopen = () => {
+        console.log('Connect to server');
+
+        addEventListener('submit', (event) => {
+          event.preventDefault();
+          const userInput = document.getElementById('textInput').value;
+          socket.send(userInput);
+        });
+      };
+
+      socket.onmessage = function (event) {
+        const receivedData = event.data;
+        const readed = new FileReader();
+        readed.readAsText(receivedData);
+        readed.onload = function () {
+          const data = readed.result;
+          const outputElement = document.getElementById('output');
+          outputElement.innerHTML += `<p>${data}</p>`;
+          console.log(outputElement);
+        };
+      };
+    </script>
+  </body>
+</html>
